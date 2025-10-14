@@ -90,11 +90,20 @@
 # w wysokości 12000 PLN?
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
+# FV = 12000
 
 
+FV_function <- function(r){
+  wplaty <- 800
+  FV <- 7000*(1+r)^6
+  for (i in 1:6){
+    FV <- FV + wplaty*(1+r)^(6-i)}
+  return(FV - 12000)
+}
+wynik <- uniroot(FV_function, interval = c(0, 0.2))
 
-
-
+stopa_mies = wynik$root*12
+stopa_mies
 #_______________________________________________________________________________
 #
 #------------------------------Zadanie 2.6--------------------------------------
@@ -121,9 +130,40 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 
+KalkulatorRatalny <- function(TypeFlag = c("A", "B", "C", "D"), K, n, r) {
+  raty <- numeric(n)
+  if (TypeFlag == 'A') {
+    # renta platna z dolu wzor na present value (suma zdyskontowanych rat)
+    # PV = C/r(1-(1+r)^-n)
+    C <- K*r*(1+r)^n/((1+r)^n-1)
+    for (i in 1:n){
+      raty[i] <- C
+    }
+  } else if (TypeFlag == 'B'){
+    # kapital <- K/n
+    # odsetki <-(K-(i-1)*K/n) * r
+    for (i in 1:n){
+      raty[i] <- K/n + (K-(i-1)*K/n) * r
+    }
+  } else if (TypeFlag == 'C'){
+    # najpierw odsetki za kazdy okres pozniej caly kapital + odsetki za ten okres
+    for (i in 1:n-1){
+      raty[i] <- K*r
+    }
+    raty[n] <- K + K*r
+  } else {
+    # nie splacamy nic przez caly okres, jedna platnosc na koncu
+    # odsetki sie kapitalizuja, czyli traktujemy jak lokate 
+    for (i in 1:n-1){
+      raty[i] <- 0
+    }
+    raty[n] <- K*(1+r)^n
+  }
+  return(raty)
+  
+}
 
-
-
+KalkulatorRatalny("C",K=1000, n=4,r=0.2)
 
 
 #_______________________________________________________________________________
@@ -146,9 +186,22 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 
+# K = 16000
+# c1,c2 = 10000
+# c1,2,3,4 = 5000
 
+# wzor z wykladu, u nas mamy jedna wyplate wiec lewa strona = K 
+# prawa strona zdyskontowane spłaty rat kredytu 
 
+rrso_1 <- function(i) {
+  K <- 16000
+  ci <- 10000
+  
+  return(ci/(1+i)^2 + ci/(1+i)^4 - K) 
+}
 
+rrso_a <- uniroot(rrso_1, c(0,0.2))$root
+rrso_a
 
 #_______________________________________________________________________________
 #
@@ -163,15 +216,43 @@
 #
 # W chwili t=0 pobierane są następujące opłaty
 #
-# - prowizja 6000 PLN,
-# - opłata przygotowawcza 2000 PLN,
-# - wycena zabezpiecenia 1000 PLN.
+  # - prowizja 6000 PLN,
+  # - opłata przygotowawcza 2000 PLN,
+  # - wycena zabezpiecenia 1000 PLN.
 # 
 # Ponadto na początku każdego okresu płacone jest również 
 # ubezpieczenie spłaty w wysokości 2% kwoty kredytu pozostałej do spłaty.
 #
 # Ile wynosi RRSO tego kredytu?
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# wzor z wykladu, u nas mamy jedna wyplate wiec lewa strona = K 
+  # prawa strona zdyskontowane spłaty rat kredytu
+  # platnosci sa w chwilach t0,1,2,3,4
+# placimy tam: K/n kredytu + 4% odsetki z pozostalego kredytu do splaty + 2% ubezpieczenie z kwoty pozostalej
+# dodatkowo w chwili t0 placimy dodatkowo 
+
+
+
+rrso_8 <- function(irr){
+  K <- 200000
+  n <- 5
+  dodatek_t0 <- 6000+2000+1000
+  suma <- 0
+  for (i in 0:4){
+    kwota_pozostala <- K - (i+1)*K/n
+    odsetki <- kwota_pozostala*0.04
+    ubez <- kwota_pozostala*0.02
+    ci = K/n + odsetki + ubez
+    if (i == 0){ci <- ci+dodatek_t0}
+    suma <- suma +  -ci/(1+irr)^i
+    
+  }
+  return(suma + K)
+}
+wyn <- uniroot(rrso_8, c(0,0.1))
+wyn
+
 
 
 
