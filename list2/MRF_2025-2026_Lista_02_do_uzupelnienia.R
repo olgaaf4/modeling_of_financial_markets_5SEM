@@ -11,12 +11,11 @@
 # drugą na koniec drugiego roku w wysokości 6 000$ PLN. 
 # Jaka jest obecna wartość długu przy założeniu oprocentowania R = 4% ?
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-
-
-
-
-
+R=0.04
+C1=8000
+C2=6000
+PV = C1/(1+R)^1+C2/(1+R)^2
+PV
 #_______________________________________________________________________________
 #
 #------------------------------Zadanie 2.2--------------------------------------
@@ -27,13 +26,22 @@
 # w skali roku to R = 11% ? Zakładamy kapitalizację miesięczną i wpłaty 
 # na początku każdego kolejnego miesiąca.
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+poczatek <- 5000
+wplata <- 1000
+r = 0.11/12
 
+FV = poczatek * (1+r)^(12)
 
+for(i in 0:10){
+  FV=FV+wplata*((1+r)^(11-i))
+} 
 
-
-
-
-
+## 2 METODA
+fv = poczatek*(1+r)
+for (i in 0:10){
+  fv = (fv+wplata)*(1+r)
+}
+fv
 #_______________________________________________________________________________
 #
 #------------------------------Zadanie 2.3--------------------------------------
@@ -44,14 +52,15 @@
 # roku, 2.0 mln PLN na koniec siódmego roku, 3.0 mln PLN na koniec 
 # dwunastego roku. Wyznacz IRR tej inwestycji.
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+C1=-5000000 #inwestycja
+C2=1000000 #na koniec 3 roku
+C3=2000000 #na koniec 7
+C4=3000000 #na koniec 12
 
+rownanie<- function(IRR){
+  C1/(1+IRR)^0 +  C2/(1+IRR)^3 + C3/(1+IRR)^7 + C4/(1+IRR)^12}
 
-
-
-
-
-
-
+uniroot(rownanie,c(-1,100))
 #_______________________________________________________________________________
 #
 #------------------------------Zadanie 2.4--------------------------------------
@@ -65,17 +74,33 @@
 # c) dziennej,
 # d) ciągłej.
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
+#stopa efektywna=stopa równoważnej lokaty z kapitalizacją roczną
 # podpunkt (a)
 
+m=4
+reff=0.15
+rnom = (((reff + 1)^(1/m)-1)*m)
+rnom*100
 
 # podpunkt (b)
 
+m=12
+reff=0.15
+rnom = (((reff + 1)^(1/m)-1)*m)
+rnom*100
 
 # podpunkt (c)
 
+m=365
+reff=0.15
+rnom = (((reff + 1)^(1/m)-1)*m)
+rnom*100
 
 # podpunkt (d)
+
+reff=0.15
+rnom = log(1+reff)
+rnom*100
 
 
 
@@ -202,6 +227,19 @@ rrso_1 <- function(i) {
 
 rrso_a <- uniroot(rrso_1, c(0,0.2))$root
 rrso_a
+
+## 2 propozycja
+
+rrso_2 <- function(RRSO){
+  S1 = 5000/(1+RRSO)^1 
+  S2 = 5000/(1+RRSO)^2 
+  S3 = 5000/(1+RRSO)^3
+  S4 = 5000/(1+RRSO)^4
+  return(S1+S2+S3+S4 - 16000 )
+}
+
+uniroot(rrso_2,c(0,0.1))
+## Odp: Bardziej opłaca się 1 propozycja
 
 #_______________________________________________________________________________
 #
