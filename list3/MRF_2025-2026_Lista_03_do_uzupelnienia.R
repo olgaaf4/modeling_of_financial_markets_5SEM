@@ -163,16 +163,17 @@ uniroot(rownanie, c(0,1))
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 # 25.07.2022 - 25.01.2023 184 dni
 
-FV = 1000
 ytm <- function(y){
-odsetki = 1000*0.0075*184/365
+odsetki = 1000*0.075*184/365
+odsetki
 brudna = 1070+odsetki
-suma = 1000/(1+y)^5.5
-for (i in 1:5)
-  suma = suma + 75/(1+y)^(i-0.5)
+tpoz = (365-184)/365
+suma = 1000/(1+y)^(5+tpoz)
+for (i in 0:5)
+  suma = suma + 75/(1+y)^(i+tpoz)
 return(suma-brudna)
 }
-uniroot(ytm,c(0,100))
+uniroot(ytm,c(0,0.1))
 
 
 #_______________________________________________________________________________
